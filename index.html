@@ -138,12 +138,12 @@ footer{text-align:center;font-size:12px;color:var(--sub);padding:20px;}
 <div class="wrap">
 
   <div class="stats">
-    <div class="stat"><b>90</b><span>案例总数</span></div>
-    <div class="stat"><b>2006-2026</b><span>覆盖年份</span></div>
-    <div class="stat"><b>12</b><span>大区</span></div>
-    <div class="stat"><b>6</b><span>高防错案例</span></div>
-    <div class="stat" style="border:2px solid #f59e0b;"><b style="color:#f59e0b;">78</b><span>物理机理缺失</span></div>
-    <div class="stat" style="border:2px solid #f59e0b;"><b style="color:#f59e0b;">64</b><span>标准化缺失</span></div>
+    <div class="stat"><b id="stTotal">–</b><span>案例总数</span></div>
+    <div class="stat"><b id="stYear">–</b><span>覆盖年份</span></div>
+    <div class="stat"><b id="stRegion">–</b><span>大区</span></div>
+    <div class="stat"><b id="stHigh">–</b><span>高防错案例</span></div>
+    <div class="stat"><b id="stPhysics">–</b><span>物理机理覆盖</span></div>
+    <div class="stat"><b id="stStandard">–</b><span>标准化覆盖</span></div>
   </div>
 
   <div class="panel">
@@ -226,6 +226,23 @@ function pokaKey(p){ return p.startsWith('高')?'高':p.startsWith('中')?'中':
 const PALETTE = ['#2563eb','#7c3aed','#db2777','#dc2626','#ea580c','#d97706','#ca8a04','#16a34a','#059669','#0891b2','#0ea5e9','#4f46e5','#9333ea','#be123c'];
 
 function countBy(arr){ const m={}; arr.forEach(x=>m[x]=(m[x]||0)+1); return m; }
+
+// 动态统计（避免写死数字与数据不符，每次打开按真实数据重算）
+(function fillStats(){
+  const ys = CASES.map(c=>c.year).filter(Boolean);
+  const ymin = ys.length?Math.min(...ys):'—', ymax = ys.length?Math.max(...ys):'—';
+  const regions = new Set(CASES.map(c=>region(c.factory)));
+  const high = CASES.filter(c=>pokaKey(c.poka)==='高').length;
+  const physOk = CASES.filter(c=>{ const se=SKILL_EVAL[String(c.id)]; return se&&se.deep&&se.deep.physics&&!se.deep.physics.startsWith('（缺'); }).length;
+  const stdOk = CASES.filter(c=>{ const se=SKILL_EVAL[String(c.id)]; return se&&se.deep&&se.deep.standard&&!se.deep.standard.startsWith('（缺'); }).length;
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('stTotal', CASES.length);
+  set('stYear', ymin+'–'+ymax);
+  set('stRegion', regions.size);
+  set('stHigh', high);
+  set('stPhysics', physOk+'/'+CASES.length);
+  set('stStandard', stdOk+'/'+CASES.length);
+})();
 
 // 饼图
 function pieSVG(data, kind){
