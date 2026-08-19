@@ -298,19 +298,19 @@ const kwMax = Math.max(...Object.values(kw),1);
 document.getElementById('cloud').innerHTML = Object.entries(kw).sort((a,b)=>b[1]-a[1])
   .map(([k,v])=>`<span style="font-size:${12+v/kwMax*16}px;background:hsl(${210-v/kwMax*40},${40+v/kwMax*40}%,${92-v/kwMax*30}%)">${k} ${v}</span>`).join('');
 
-// 学习路径
+// 学习路径（filter 必须用 CASES 中真实存在的 tag，否则下拉框无匹配，按钮无效）
 const PATH = [
-  {tags:['清洗/CIP','酸包'], tip:'最高频根因组合：清洗死角/CIP流量温度浓度未确认 → 重点学拆检确认与三方确认'},
-  {tags:['包材','胀包'], tip:'包材灭菌与完整性：送纸/双氧水系统防污染、挤压滚轮下方盖板清洁'},
-  {tags:['设备/电气','开机'], tip:'开机启机异常、互锁防呆、点检标准化 → 学"一次不成则排包全检"'},
-  {tags:['原料','理化指标'], tip:'调配互锁、原料每包确认、PH/糖度双确认 → 防误操作与串样'},
-  {tags:['喷码/标识'], tip:'电眼感应、自动扫码剔除 → 把漏喷挡在出厂前'}
+  {tags:['清洗/CIP','酸包'], filter:'清洗/CIP', tip:'最高频根因组合：清洗死角/CIP流量温度浓度未确认 → 重点学拆检确认与三方确认'},
+  {tags:['包材','胀包'], filter:'封合/包材', tip:'包材灭菌与完整性：送纸/双氧水系统防污染、挤压滚轮下方盖板清洁'},
+  {tags:['设备/电气','开机'], filter:'蒸汽/停机', tip:'开机启机异常、互锁防呆、点检标准化 → 学"一次不成则排包全检"'},
+  {tags:['原料','理化指标'], filter:'蛋白质/配方', tip:'调配互锁、原料每包确认、PH/糖度双确认 → 防误操作与串样'},
+  {tags:['喷码/标识'], filter:'喷码缺失', tip:'电眼感应、自动扫码剔除 → 把漏喷挡在出厂前'}
 ];
 document.getElementById('path').innerHTML = PATH.map((p,i)=>`
   <div class="path">
     <span class="step">${i+1}</span>
     <div><b>${p.tags.join(' · ')}</b><br><span style="color:var(--sub);font-size:12px">${p.tip}</span></div>
-    <button class="go" onclick="focusFilter('type','${p.tags[0]}')">去学</button>
+    <button class="go" onclick="focusFilter('type','${p.filter}')">去学</button>
   </div>`).join('');
 
 // 风险清单
